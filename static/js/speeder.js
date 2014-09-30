@@ -8,36 +8,39 @@ var app = {
 	isLoading: false,
 	myReadingList: null,
 	currentIx: 0,
+	theEnd: false,
 
 	init: function() {
 		this.$loader = $("#loading");
 		
 		$("#wrapper").html("");
 		$(window).on("resize", this.windowSizes);
+		$(window).on("scroll", this.isScrolling);
 		
 		this.myReadingList = myReadingList;
 
 		var next_article = this.readingList();
 		this.loadArticle(next_article);
-		this.addScrolling();
 	},
 
 	readingList: function() {
-		var next_url = this.myReadingList[this.currentIx];
+		var next_url;
+
+		if(this.currentIx in this.myReadingList) {
+			next_url = this.myReadingList[this.currentIx];
+			this.currentIx++;
+		} else {
+			next_url = "empty";
+		}
 		
-		this.currentIx++;
-
 		return next_url;
-	},
-
-	addScrolling: function(){
-		$(window).on("scroll", this.isScrolling);
 	},
 
 	isScrolling: function(e) {
 		var that = e.currentTarget.app;
 		var scrolled = window.scrollY;
-		if(that.isLoading == false && (that.winHeight + scrolled) - that.pixelBreakPoint > 0) {
+
+		if(that.theEnd === false && that.isLoading == false && (that.winHeight + scrolled) - that.pixelBreakPoint > 0) {
 			console.log("loading article ...");
 			that.loadNextArticle();
 		}
@@ -56,15 +59,24 @@ var app = {
 		that.isLoading = true;
 
 		$.get("loadArticle.php", { u: url }, function(cb){
-			var article = $("article", cb).html();
 
-			$("#wrapper").append("<article>" + article + "</article>");
+			if(cb.img > '') {
+				var img = $("<img/>").attr("src", cb.img);
+			} else {
+				var img = "";
+			}
+
+			var title = $("<h2/>").html(cb.title).addClass("the_headline");
+			var lead = $("<div/>").html(cb.lead).addClass("the_lead");
+			var body = $("<div/>").html(cb.body).addClass("the_body");
+			var article = $("<article/>").append(title).append(img).append(lead).append(body);
+			
+			$("#wrapper").append(article);
 
 			that.pixelBreakPoint = $("#wrapper").height();
 			console.log(that.pixelBreakPoint);
 
 			that.$loader.hide();
-
 			that.isLoading = false;
 		});
 	},
@@ -72,7 +84,16 @@ var app = {
 	loadNextArticle: function() {
 		var next_url = this.readingList();
 
-		this.loadArticle(next_url);
+		if(next_url == "empty") {
+			this.showEndMessage();
+			this.theEnd = true;
+		} else {
+			this.loadArticle(next_url);
+		}
+	},
+
+	showEndMessage: function() {
+		$("#wrapper").append("You have reached the end. Check back soon for more to read!");
 	}
 };
 

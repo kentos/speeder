@@ -6,9 +6,24 @@ body, html {
 }
 
 #wrapper {
-	width: 820px;
+	width: 740px;
 	margin: auto;
 	font-size: 150%;
+}
+
+#wrapper article {
+	padding: 20px 0;
+	margin: 20px 0;
+	border-top: 1px solid #ddd;
+}
+
+#wrapper article h2 {
+	font-size: 335%;
+	margin: 0;
+}
+
+#wrapper article img {
+	width: 100%;
 }
 
 #loading {
@@ -27,6 +42,7 @@ body, html {
 }
 
 @-webkit-keyframes doit {
-	from { color: #fff; }
-	to { color: #aaa; }
+	0% { color: #fff; background-color: #a00; }
+	50% { color: #aaa; background-color: #c00; }
+	100% { color: #fff; background-color: #a00; }
 }

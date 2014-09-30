@@ -1,9 +1,10 @@
 <?php
+include_once 'app/article_parsers.php';
 
-sleep(2);
+#sleep(2);
 
 $url = $_GET['u'];
-$html = file_get_contents($url);
-$html = strip_tags($html);
+$data = parse($url);
 
-echo $html;
+header("Content-type: application/json");
+echo json_encode($data);
